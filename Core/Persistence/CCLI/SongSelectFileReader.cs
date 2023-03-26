@@ -30,7 +30,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
     public class SongSelectFileReader : ISongFileReader<SongSelectFile>
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         protected const string SupportedFileFormatVersion = "3.0";
         protected const string TypeString = "SongSelect Import File";
@@ -48,7 +48,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
             foreach (var l in lines)
             {
                 var li = l.Trim();
-                var s = li.Split(new[] {"="}, StringSplitOptions.None);
+                var s = li.Split(new[] { "=" }, StringSplitOptions.None);
                 if (s.Length > 1)
                 {
                     var k = s[0];
@@ -75,7 +75,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
                                 break;
 
                             case "Themes":
-                                foreach (var t in v.Split(new[] {"/t"}, StringSplitOptions.RemoveEmptyEntries))
+                                foreach (var t in v.Split(new[] { "/t" }, StringSplitOptions.RemoveEmptyEntries))
                                 {
                                     sng.Themes.Add(t.Trim());
                                 }
@@ -86,11 +86,11 @@ namespace PraiseBase.Presenter.Persistence.CCLI
                                 break;
 
                             case "Fields":
-                                fields.AddRange(v.Split(new[] {"/t"}, StringSplitOptions.RemoveEmptyEntries));
+                                fields.AddRange(v.Split(new[] { "/t" }, StringSplitOptions.RemoveEmptyEntries));
                                 break;
 
                             case "Words":
-                                words.AddRange(v.Split(new[] {"/t"}, StringSplitOptions.RemoveEmptyEntries));
+                                words.AddRange(v.Split(new[] { "/t" }, StringSplitOptions.RemoveEmptyEntries));
                                 break;
                         }
                     }
@@ -124,7 +124,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
                 {
                     Caption = fields[fx]
                 };
-                foreach (var l in words[fx].Split(new[] {"/n"}, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var l in words[fx].Split(new[] { "/n" }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     p.Lines.Add(l);
                 }
@@ -158,7 +158,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
                         if (l != null)
                         {
                             var li = l.Trim();
-                            var s = li.Split(new[] {"="}, StringSplitOptions.None);
+                            var s = li.Split(new[] { "=" }, StringSplitOptions.None);
                             if (s.Length > 1)
                             {
                                 var k = s[0];
@@ -191,7 +191,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                // log.Error(e.Message);
             }
             return null;
         }
@@ -215,7 +215,7 @@ namespace PraiseBase.Presenter.Persistence.CCLI
                         var l = sr.ReadLine();
                         if (l != null)
                         {
-                            var s = l.Split(new[] {"="}, StringSplitOptions.None);
+                            var s = l.Split(new[] { "=" }, StringSplitOptions.None);
                             if (s.Length > 1)
                             {
                                 var k = s[0];

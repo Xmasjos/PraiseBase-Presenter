@@ -33,7 +33,7 @@ namespace PraiseBase.Presenter.Manager
     public class ImageManager
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private const string ExcludeThumbDirName = "[Thumbnails]";
         private readonly string[] _imgExtensions = {"*.jpg", ".jpeg"};
@@ -185,7 +185,7 @@ namespace PraiseBase.Presenter.Manager
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                // log.Error(e.Message);
                 return ImageUtils.GetEmptyImage(DefaultImageSize, DefaultEmptyColor);
             }
         }

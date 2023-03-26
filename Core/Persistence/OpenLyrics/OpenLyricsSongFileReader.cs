@@ -29,7 +29,7 @@ namespace PraiseBase.Presenter.Persistence.OpenLyrics
     public class OpenLyricsSongFileReader : ISongFileReader<OpenLyricsSong>
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         protected const string SupportedFileFormatVersion = "0.8";
         protected const string XmlRootNodeName = "song";
@@ -188,7 +188,7 @@ namespace PraiseBase.Presenter.Persistence.OpenLyrics
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                // log.Error(e.Message);
             }
             return null;
         }

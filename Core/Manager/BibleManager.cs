@@ -37,7 +37,7 @@ namespace PraiseBase.Presenter.Manager
     public class BibleManager
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         ///     Status of bible passage search
@@ -118,7 +118,7 @@ namespace PraiseBase.Presenter.Manager
                 }
                 catch (Exception e)
                 {
-                    log.Error(e.Message);
+                    // log.Error(e.Message);
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace PraiseBase.Presenter.Manager
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                // log.Error(e.Message);
             }
         }
 
