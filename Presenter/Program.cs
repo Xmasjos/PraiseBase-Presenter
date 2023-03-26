@@ -32,7 +32,7 @@ using PraiseBase.Presenter.Manager;
 using PraiseBase.Presenter.Persistence.Setlists;
 using PraiseBase.Presenter.Presenter;
 using PraiseBase.Presenter.Properties;
-using log4net.Config;
+// using log4net.Config;
 using System.Diagnostics;
 
 namespace PraiseBase.Presenter
@@ -40,7 +40,7 @@ namespace PraiseBase.Presenter
     internal static class Program
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The main entry point for the application.
@@ -64,7 +64,7 @@ namespace PraiseBase.Presenter
             }
 
             Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(Settings.Default.SelectedCulture);
-            log.Debug("Set culture to " + Thread.CurrentThread.CurrentUICulture);
+            // log.Debug("Set culture to " + Thread.CurrentThread.CurrentUICulture);
 
             // code to ensure that only one copy of the software is running.
             Mutex mutex;
@@ -128,7 +128,7 @@ namespace PraiseBase.Presenter
                 GC.Collect();
             }
 
-            log.Debug(@"Loading took " + (DateTime.Now - startTime).TotalSeconds + @" seconds!");
+            // log.Debug(@"Loading took " + (DateTime.Now - startTime).TotalSeconds + @" seconds!");
 
             string setlistFile = null;
             string songFile = null;
@@ -165,7 +165,7 @@ namespace PraiseBase.Presenter
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            log.Error("An unhandled exception occurred: " + e.ExceptionObject);
+            // log.Error("An unhandled exception occurred: " + e.ExceptionObject);
 
             try {
 
@@ -193,7 +193,7 @@ namespace PraiseBase.Presenter
             }
             catch (Exception ex)
             {
-                log.Error("An exception ocurred while trying to display the unhandled exception message box: " + ex);
+                // log.Error("An exception ocurred while trying to display the unhandled exception message box: " + ex);
             }
 
             Process.GetCurrentProcess().Kill();

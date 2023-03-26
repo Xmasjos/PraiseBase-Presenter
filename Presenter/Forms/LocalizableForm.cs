@@ -10,7 +10,7 @@ namespace PraiseBase.Presenter.Forms
     public class LocalizableForm : Form
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         static readonly List<Form> AllForms = new List<Form>();
 
@@ -24,12 +24,12 @@ namespace PraiseBase.Presenter.Forms
         /// </summary>
         protected void SetLanguage(CultureInfo lang)
         {
-            log.Debug("Set culture to " + lang);
+            // log.Debug("Set culture to " + lang);
 
             //Set the language in the application
             System.Threading.Thread.CurrentThread.CurrentUICulture = lang;
 
-            foreach (Form form in AllForms) 
+            foreach (Form form in AllForms)
             {
                 if (form != null)
                 {

@@ -27,14 +27,14 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-        {
+        {       
             this.projectionControlHost = new System.Windows.Forms.Integration.ElementHost();
             this.SuspendLayout();
             // 
             // projectionControlHost
             // 
-            this.projectionControlHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.projectionControlHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.projectionControlHost.Location = new System.Drawing.Point(0, 0);
             this.projectionControlHost.Name = "projectionControlHost";

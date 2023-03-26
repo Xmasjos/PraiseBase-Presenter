@@ -25,12 +25,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
+using Timer = System.Windows.Forms.Timer;
+
 namespace PraiseBase.Presenter.Projection
 {
     class ScreenManager
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Singleton variable
@@ -55,7 +57,7 @@ namespace PraiseBase.Presenter.Projection
         private int _selectedScreen = -1;
         public int SelectedScreenIndex
         {
-            get 
+            get
             {
                 return _selectedScreen;
             }
@@ -69,15 +71,15 @@ namespace PraiseBase.Presenter.Projection
                 {
                     _selectedScreen = 0;
                 }
-            } 
+            }
         }
 
-        public Screen SelectedScreen 
-        { 
-            get 
-            { 
-                return AvailableProjectionScreens[SelectedScreenIndex];  
-            } 
+        public Screen SelectedScreen
+        {
+            get
+            {
+                return AvailableProjectionScreens[SelectedScreenIndex];
+            }
         }
 
         protected int ScannedScreensHash;
@@ -124,7 +126,7 @@ namespace PraiseBase.Presenter.Projection
         /// Detect screen configuration
         /// </summary>
         /// <returns></returns>
-        public bool DetectScreens() 
+        public bool DetectScreens()
         {
             AvailableProjectionScreens = new List<Screen>();
 
@@ -135,25 +137,25 @@ namespace PraiseBase.Presenter.Projection
                 if (!t.Primary)
                 {
                     AvailableProjectionScreens.Add(t);
-                    log.Debug("Detected projection screen " + t.DeviceName + ", " + t.WorkingArea);
+                    // log.Debug("Detected projection screen " + t.DeviceName + ", " + t.WorkingArea);
                 }
                 else
                 {
                     MainScreen = t;
-                    log.Debug("Detected main screen " + t.DeviceName + ", " + t.WorkingArea);
+                    // log.Debug("Detected main screen " + t.DeviceName + ", " + t.WorkingArea);
                 }
                 hash += t.GetHashCode();
             }
             ScreensChangedSinceLastScan = (ScannedScreensHash != hash);
             ScannedScreensHash = hash;
 
-            if (AvailableProjectionScreens.Count > 0) 
+            if (AvailableProjectionScreens.Count > 0)
             {
                 if (_selectedScreen < 0)
                 {
                     _selectedScreen = 0;
                 }
-                else if (_selectedScreen > AvailableProjectionScreens.Count) 
+                else if (_selectedScreen > AvailableProjectionScreens.Count)
                 {
                     _selectedScreen = AvailableProjectionScreens.Count;
                 }

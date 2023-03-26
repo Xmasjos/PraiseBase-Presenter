@@ -10,13 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using static MoreLinq.Extensions.DistinctByExtension;
 
 namespace PraiseBase.Presenter.Forms
 {
     public partial class SongStatsticsViewer : Form
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private string _setlistDir;
         private SongManager _songManager;
@@ -70,7 +69,8 @@ namespace PraiseBase.Presenter.Forms
                                 }
                                 else
                                 {
-                                    entries.Add(s.Title, new SongStatisticsItem() {
+                                    entries.Add(s.Title, new SongStatisticsItem()
+                                    {
                                         Count = 1,
                                         LastUsed = fileWriteTime,
                                         CCLI = s.CcliIdentifier,
@@ -128,17 +128,18 @@ namespace PraiseBase.Presenter.Forms
                         }
                         else
                         {
-                            list.Add(new Song() {
+                            list.Add(new Song()
+                            {
                                 Title = i
                             });
-                            log.WarnFormat("Song '{0}' from setlist '{1}' not found in song manager", i, fileName);
+                            // log.WarnFormat("Song '{0}' from setlist '{1}' not found in song manager", i, fileName);
                         }
                     }
                 }
             }
             catch (Exception err)
             {
-                log.ErrorFormat("Unable to read setlist file {0}: {1}", fileName, err.Message);
+                // log.ErrorFormat("Unable to read setlist file {0}: {1}", fileName, err.Message);
             }
             return list;
         }

@@ -56,7 +56,7 @@ namespace PraiseBase.Presenter.Presenter
     public partial class MainWindow : LocalizableForm
     {
         // Here is the once-per-class call to initialize the log object
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Timer _diaTimer;
         private List<String> _imageSearchResults;
@@ -86,7 +86,7 @@ namespace PraiseBase.Presenter.Presenter
             InitializeComponent();
 
             Size = Settings.Default.MainWindowSize;
-            
+
             RegisterChild(this);
 
             _originalFormTitle = Text;
@@ -367,13 +367,13 @@ namespace PraiseBase.Presenter.Presenter
                 try
                 {
                     listViewSongs.Items[0].Selected = true;
-                    var key = (String) listViewSongs.SelectedItems[0].Tag;
+                    var key = (String)listViewSongs.SelectedItems[0].Tag;
                     _songManager.CurrentSong = _songManager.SongList[key];
                     ShowCurrentSongDetails();
                 }
                 catch (Exception e)
                 {
-                    log.Error(@"Song search exception: " + e);
+                    // log.Error(@"Song search exception: " + e);
                 }
             }
 
@@ -391,7 +391,7 @@ namespace PraiseBase.Presenter.Presenter
                 toolStripButtonProjectionOff.CheckState = CheckState.Checked;
                 toolStripButtonProjectionOn.CheckState = CheckState.Unchecked;
                 toolStripButtonBlackout.CheckState = CheckState.Unchecked;
-                
+
                 ProjectionManager.Instance.HideProjectionWindow();
             }
             // Blackout
@@ -401,7 +401,7 @@ namespace PraiseBase.Presenter.Presenter
                 toolStripButtonProjectionOff.CheckState = CheckState.Unchecked;
                 toolStripButtonBlackout.CheckState = CheckState.Checked;
                 toolStripButtonProjectionOn.CheckState = CheckState.Unchecked;
-                
+
                 ProjectionManager.Instance.ShowBlackout();
             }
             // Show projection
@@ -493,7 +493,7 @@ namespace PraiseBase.Presenter.Presenter
                 }
                 else
                 {
-                    string key = (string) listViewSongs.SelectedItems[0].Tag;
+                    string key = (string)listViewSongs.SelectedItems[0].Tag;
                     if (_songManager.CurrentSong == null || _songManager.CurrentSong.Song == null || _songManager.CurrentSong.Filename != key)
                     {
                         if (_songManager.SongList.ContainsKey(key))
@@ -504,7 +504,7 @@ namespace PraiseBase.Presenter.Presenter
                         }
                         else
                         {
-                            MessageBox.Show(StringResources.SongDoesNotExistInSonglist, StringResources.Error, 
+                            MessageBox.Show(StringResources.SongDoesNotExistInSonglist, StringResources.Error,
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -521,7 +521,7 @@ namespace PraiseBase.Presenter.Presenter
         {
             if (listViewSongs.SelectedItems.Count > 0)
             {
-                var key = (string) listViewSongs.SelectedItems[0].Tag;
+                var key = (string)listViewSongs.SelectedItems[0].Tag;
                 if (_songManager.SongList.ContainsKey(key) && (_songManager.CurrentSong == null || _songManager.CurrentSong.Filename != key))
                 {
                     _songManager.CurrentSong = _songManager.SongList[key];
@@ -624,7 +624,7 @@ namespace PraiseBase.Presenter.Presenter
             AdditionalInformationPosition publisherPosition;
 
             // Formatting based on master styling
-            if (Settings.Default.ProjectionUseMaster|| s.Formatting == null)
+            if (Settings.Default.ProjectionUseMaster || s.Formatting == null)
             {
                 ISlideTextFormattingMapper<Settings> mapper = new SettingsSlideTextFormattingMapper();
                 mapper.Map(Settings.Default, ref slideFormatting);
@@ -738,13 +738,13 @@ namespace PraiseBase.Presenter.Presenter
                 }
             }
 
-                // SHIFT pressed, use current slide
+            // SHIFT pressed, use current slide
             else if (!_linkLayers ^ ((ModifierKeys & Keys.Shift) == Keys.Shift))
             {
                 ProjectionManager.Instance.DisplayText(ssl);
             }
 
-                // Current slide + attached image
+            // Current slide + attached image
             else
             {
                 ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
@@ -1086,7 +1086,7 @@ namespace PraiseBase.Presenter.Presenter
 
                     ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
                     {
-                        Image = _imgManager.GetImageFromRelPath((string) listViewDirectoryImages.Items[idx].Tag)
+                        Image = _imgManager.GetImageFromRelPath((string)listViewDirectoryImages.Items[idx].Tag)
                     };
                     ProjectionManager.Instance.DisplayImage(iml, Settings.Default.ProjectionFadeTimeLayer1);
 
@@ -1137,7 +1137,7 @@ namespace PraiseBase.Presenter.Presenter
                 listViewFavorites.EnsureVisible(listViewFavorites.Items.Count - 1);
                 Settings.Default.ImageFavorites.Add(relImagePath);
                 Settings.Default.Save();
-                tabPageImageFavorites.Text = StringResources.Favorites +  @" (" + Settings.Default.ImageFavorites.Count + @")";
+                tabPageImageFavorites.Text = StringResources.Favorites + @" (" + Settings.Default.ImageFavorites.Count + @")";
             }
         }
 
@@ -1286,7 +1286,7 @@ namespace PraiseBase.Presenter.Presenter
 
                 _diaTimer = new Timer
                 {
-                    Interval = duration*1000
+                    Interval = duration * 1000
                 };
                 _diaTimer.Tick += diaTimer_Tick;
 
@@ -1324,7 +1324,7 @@ namespace PraiseBase.Presenter.Presenter
             }
             ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
             {
-                Image = Image.FromFile(((Queue<string>) ((Timer) sender).Tag).Dequeue())
+                Image = Image.FromFile(((Queue<string>)((Timer)sender).Tag).Dequeue())
             };
             ProjectionManager.Instance.DisplayImage(iml, Settings.Default.ProjectionFadeTimeLayer1);
         }
@@ -1387,7 +1387,7 @@ namespace PraiseBase.Presenter.Presenter
 
                     ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
                     {
-                        Image = _imgManager.GetImageFromRelPath((string) listViewImageHistory.Items[idx].Tag)
+                        Image = _imgManager.GetImageFromRelPath((string)listViewImageHistory.Items[idx].Tag)
                     };
                     ProjectionManager.Instance.DisplayImage(iml, Settings.Default.ProjectionFadeTimeLayer1);
                 }
@@ -1408,10 +1408,10 @@ namespace PraiseBase.Presenter.Presenter
             {
                 treeViewImageDirectories.SelectedNode = null;
                 _imageSearchResults.Clear();
-                log.Debug("Search: "+ needle);
+                // log.Debug("Search: " + needle);
                 foreach (string ims in _imgManager.SearchImages(needle))
                 {
-                    log.Debug("Found: " + ims);
+                    // log.Debug("Found: " + ims);
                     _imageSearchResults.Add(ims);
                 }
                 treeViewImageDirectories.SelectedNode = treeViewImageDirectories.Nodes[treeViewImageDirectories.Nodes.Count - 1];
@@ -1589,7 +1589,7 @@ namespace PraiseBase.Presenter.Presenter
                 int idx = listViewImageQueue.SelectedIndices[0];
                 ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
                 {
-                    Image = _imgManager.GetImageFromRelPath((string) listViewImageQueue.Items[idx].Tag)
+                    Image = _imgManager.GetImageFromRelPath((string)listViewImageQueue.Items[idx].Tag)
                 };
                 ProjectionManager.Instance.DisplayImage(iml, Settings.Default.ProjectionFadeTimeLayer1);
             }
@@ -1644,7 +1644,7 @@ namespace PraiseBase.Presenter.Presenter
                     }
                     ImageLayer iml = new ImageLayer(Settings.Default.ProjectionBackColor)
                     {
-                        Image = _imgManager.GetImageFromRelPath((string) listViewFavorites.Items[idx].Tag)
+                        Image = _imgManager.GetImageFromRelPath((string)listViewFavorites.Items[idx].Tag)
                     };
                     ProjectionManager.Instance.DisplayImage(iml);
 
@@ -1666,12 +1666,12 @@ namespace PraiseBase.Presenter.Presenter
             mapper.Map(Settings.Default, ref slideFormatting);
             slideFormatting.ScaleFontSize = Settings.Default.ProjectionFontScaling;
             slideFormatting.SmoothShadow = Settings.Default.ProjectionSmoothShadow;
-            
+
             slideFormatting.LineWrap = true;
 
             TextLayer lt = new TextLayer(slideFormatting)
             {
-                MainText = text.Split(new[] {Environment.NewLine}, StringSplitOptions.None)
+                MainText = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None)
             };
             lt.DrawBordersForDebugging = Settings.Default.DebugMode;
 
@@ -1737,7 +1737,7 @@ namespace PraiseBase.Presenter.Presenter
         {
             if (listViewSongHistory.SelectedIndices.Count > 0)
             {
-                var key = (string) listViewSongHistory.SelectedItems[0].Tag;
+                var key = (string)listViewSongHistory.SelectedItems[0].Tag;
                 _songManager.CurrentSong = _songManager.SongList[key];
                 ShowCurrentSongDetails();
             }
@@ -1889,7 +1889,7 @@ namespace PraiseBase.Presenter.Presenter
             listViewBibleVerses.Items.Clear();
             foreach (BibleVerse v in cp.Verses)
             {
-                ListViewItem lvi = new ListViewItem(new string[]{v.Number.ToString(), v.Text});
+                ListViewItem lvi = new ListViewItem(new string[] { v.Number.ToString(), v.Text });
                 lvi.Tag = v;
                 listViewBibleVerses.Items.Add(lvi);
             }
@@ -2058,7 +2058,7 @@ namespace PraiseBase.Presenter.Presenter
                 }
                 else
                 {
-                    BibleManager.BibleItem bibleItem = ((KeyValuePair<String,BibleManager.BibleItem>)comboBoxBible.SelectedItem).Value;
+                    BibleManager.BibleItem bibleItem = ((KeyValuePair<String, BibleManager.BibleItem>)comboBoxBible.SelectedItem).Value;
 
                     _biblePassageSearchResult = _bibleManager.SearchPassage(bibleItem.Bible, needle);
                     if (_biblePassageSearchResult.Status == BibleManager.BiblePassageSearchStatus.Found)
@@ -2071,8 +2071,8 @@ namespace PraiseBase.Presenter.Presenter
                                 searchTextBoxBible.Select(searchTextBoxBible.Text.Length, 0);
                             }
 
-                            if (_biblePassageSearchResult.Passage.Book != null 
-                                &&_biblePassageSearchResult.Passage.Chapter != null 
+                            if (_biblePassageSearchResult.Passage.Book != null
+                                && _biblePassageSearchResult.Passage.Chapter != null
                                 && _biblePassageSearchResult.Passage.Verse != null)
                             {
                                 int bookIdx = _biblePassageSearchResult.Passage.Book.Number - 1;
@@ -2543,7 +2543,7 @@ namespace PraiseBase.Presenter.Presenter
             Setlist sl = new Setlist();
             for (int i = 0; i < listViewSetList.Items.Count; i++)
             {
-                var tag = (string) listViewSetList.Items[i].Tag;
+                var tag = (string)listViewSetList.Items[i].Tag;
                 var song = _songManager.SongList[tag].Song;
                 sl.Items.Add(song.Title);
             }
@@ -2822,7 +2822,7 @@ namespace PraiseBase.Presenter.Presenter
                 }
             }
         }
-        
+
         private void vordergrundToolStripMenuItem_Click(object sender, EventArgs e)
         {
             splitContainerLayerContent.Panel1Collapsed = !splitContainerLayerContent.Panel1Collapsed;

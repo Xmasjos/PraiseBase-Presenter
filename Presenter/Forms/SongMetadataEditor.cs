@@ -10,7 +10,7 @@ namespace PraiseBase.Presenter.Forms
 {
     public partial class SongMetadataEditor : Form
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private string _setlistDir;
         private SongManager _songManager;
