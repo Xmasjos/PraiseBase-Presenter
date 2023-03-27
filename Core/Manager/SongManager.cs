@@ -24,6 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PraiseBase.Presenter.Model.Song;
 using PraiseBase.Presenter.Persistence;
 using PraiseBase.Presenter.Util;
@@ -39,14 +42,19 @@ namespace PraiseBase.Presenter.Manager
         // Here is the once-per-class call to initialize the log object
         // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IOptionsMonitor<PresenterOptions> _optionsMonitor;
+        private readonly ILogger<SongManager> _logger;
+
         /// <summary>
         ///     The constructor
         /// </summary>
-        public SongManager(string songDirPath)
+        public SongManager(IOptionsMonitor<PresenterOptions> optionsMonitor, ILogger<SongManager> logger)
         {
+            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
             CurrentPartNr = -1;
             CurrentSlideNr = -1;
-            SongDirPath = songDirPath;
             SongList = new Dictionary<string, SongItem>();
         }
 
@@ -71,11 +79,6 @@ namespace PraiseBase.Presenter.Manager
         public int CurrentSlideNr { get; set; }
 
         /// <summary>
-        ///     Path to the song root directory
-        /// </summary>
-        public string SongDirPath { get; set; }
-
-        /// <summary>
         ///     Gets the current slide
         /// </summary>
         public SongSlide GetCurrentSlide()
@@ -91,9 +94,11 @@ namespace PraiseBase.Presenter.Manager
         {
             // Find song files
             var songPaths = new List<string>();
+            var songDirPath = _optionsMonitor.CurrentValue.SongDirectory;
+
             foreach (var ext in SongFilePluginFactory.SupportedExtensions)
             {
-                var songFilePaths = Directory.GetFiles(SongDirPath, "*" + ext, SearchOption.AllDirectories);
+                var songFilePaths = Directory.GetFiles(songDirPath, "*" + ext, SearchOption.AllDirectories);
                 songPaths.AddRange(songFilePaths);
             }
             var cnt = songPaths.Count;
@@ -127,8 +132,7 @@ namespace PraiseBase.Presenter.Manager
                 }
                 catch (Exception e)
                 {
-                    // log.Error(@"Unable to load song file " + path + @" (" + e.Message + @")");
-                    // log.Error(e.StackTrace);
+                    _logger.LogError(e, "Unable to load song file " + path);
                 }
             }
         }
@@ -159,7 +163,7 @@ namespace PraiseBase.Presenter.Manager
                 }
                 catch (Exception e)
                 {
-                    // log.Error(@"Unable to load song file " + si.Filename + @" (" + e.Message + @")");
+                    _logger.LogError(e, "Unable to load song file " + si.Filename);
                 }
             }
         }

@@ -25,6 +25,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PraiseBase.Presenter.Model.Song;
 using PraiseBase.Presenter.Util;
 
@@ -32,48 +35,29 @@ namespace PraiseBase.Presenter.Manager
 {
     public class ImageManager
     {
-        // Here is the once-per-class call to initialize the log object
-        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         private const string ExcludeThumbDirName = "[Thumbnails]";
-        private readonly string[] _imgExtensions = {"*.jpg", ".jpeg"};
+        private readonly string[] _imgExtensions = { "*.jpg", ".jpeg" };
+        private readonly IOptionsMonitor<PresenterOptions> _optionsMonitor;
+        private readonly ILogger<ImageManager> _logger;
 
         /// <summary>
         ///     Private constructor
         /// </summary>
-        public ImageManager(string imageDirPath, string thumbDirPath)
+        public ImageManager(IOptionsMonitor<PresenterOptions> optionsMonitor, ILogger<ImageManager> logger)
         {
-            ImageDirPath = imageDirPath;
-            ThumbDirPath = thumbDirPath;
-
-            DefaultThumbSize = new Size(80, 60);
-            DefaultImageSize = new Size(1024, 768);
+            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        /// <summary>
-        ///     Default size for new images
-        /// </summary>
-        public Size DefaultImageSize { get; set; }
-
-        /// <summary>
-        ///     Default thumbnail size
-        /// </summary>
-        public Size DefaultThumbSize { get; set; }
-
-        /// <summary>
-        ///     Default image color for empty images
-        /// </summary>
-        public Color DefaultEmptyColor { get; set; }
 
         /// <summary>
         ///     Base path to the image directory
         /// </summary>
-        public string ImageDirPath { get; set; }
+        public string ImageDirPath => _optionsMonitor.CurrentValue.ImageDirectory;
 
         /// <summary>
-        ///     Base path to the thumbnails directory
+        ///     Base path to the thumbs directory
         /// </summary>
-        public string ThumbDirPath { get; set; }
+        public string ThumbDirPath => _optionsMonitor.CurrentValue.ThumbDirectory;
 
         /// <summary>
         ///     Check and create thumbnails if necessary
@@ -88,10 +72,12 @@ namespace PraiseBase.Presenter.Manager
             }
 
             // Update thumbnails
+            var imageDirPath = _optionsMonitor.CurrentValue.ImageDirectory;
+
             List<string> paths = new List<string>();
             foreach (var ext in _imgExtensions)
             {
-                paths.AddRange(Directory.GetFiles(ImageDirPath, ext, SearchOption.AllDirectories));
+                paths.AddRange(Directory.GetFiles(imageDirPath, ext, SearchOption.AllDirectories));
             }
             CheckThumbnailFiles(paths.ToArray());
         }
@@ -102,12 +88,15 @@ namespace PraiseBase.Presenter.Manager
         private void CleanupThumbs()
         {
             // Cleanup images of which no original file exists
+            var thumbDirPath = _optionsMonitor.CurrentValue.ThumbDirectory;
+            var imageDirPath = _optionsMonitor.CurrentValue.ImageDirectory;
+
             foreach (var ext in _imgExtensions)
             {
-                var tumbPaths = Directory.GetFiles(ThumbDirPath, ext, SearchOption.AllDirectories);
+                var tumbPaths = Directory.GetFiles(thumbDirPath, ext, SearchOption.AllDirectories);
                 foreach (var file in tumbPaths)
                 {
-                    var realImage = file.Replace(ThumbDirPath, ImageDirPath);
+                    var realImage = file.Replace(thumbDirPath, imageDirPath);
                     if (!File.Exists(realImage))
                     {
                         File.Delete(file);
@@ -116,18 +105,23 @@ namespace PraiseBase.Presenter.Manager
             }
 
             // Cleanup empty directories
-            FileUtils.RemoveEmptySubdirectories(ThumbDirPath);
+            FileUtils.RemoveEmptySubdirectories(thumbDirPath);
         }
 
-        private void CheckThumbnailFiles(string[] paths) {
+        private void CheckThumbnailFiles(string[] paths)
+        {
+            var thumbDirPath = _optionsMonitor.CurrentValue.ThumbDirectory;
+            var imageDirPath = _optionsMonitor.CurrentValue.ImageDirectory;
+            var defaultThumbSize = _optionsMonitor.CurrentValue.ThumbSize;
+
             var missingThumbsSrc = new List<string>();
             var missingThumbsTrg = new List<string>();
             foreach (var file in paths)
             {
-                if (!file.Contains(ExcludeThumbDirName) && !file.StartsWith(ThumbDirPath))
+                if (!file.Contains(ExcludeThumbDirName) && !file.StartsWith(thumbDirPath))
                 {
-                    var relativePath = file.Substring((ImageDirPath + Path.DirectorySeparatorChar).Length);
-                    var thumbPath = ThumbDirPath + Path.DirectorySeparatorChar + relativePath;
+                    var relativePath = file.Substring((imageDirPath + Path.DirectorySeparatorChar).Length);
+                    var thumbPath = thumbDirPath + Path.DirectorySeparatorChar + relativePath;
                     if (!File.Exists(thumbPath))
                     {
                         missingThumbsSrc.Add(file);
@@ -140,8 +134,8 @@ namespace PraiseBase.Presenter.Manager
             {
                 for (var i = 0; i < cnt; i++)
                 {
-                    ImageUtils.CreateThumb(missingThumbsSrc[i], missingThumbsTrg[i], DefaultThumbSize);
-                    if (i%10 == 0)
+                    ImageUtils.CreateThumb(missingThumbsSrc[i], missingThumbsTrg[i], defaultThumbSize);
+                    if (i % 10 == 0)
                     {
                         var e = new ThumbnailCreateEventArgs(i, cnt);
                         OnThumbnailCreated(e);
@@ -152,27 +146,33 @@ namespace PraiseBase.Presenter.Manager
 
         public Image GetThumbFromRelPath(string relativePath)
         {
-            if (File.Exists(ThumbDirPath + Path.DirectorySeparatorChar + relativePath))
+            var thumbDirPath = _optionsMonitor.CurrentValue.ThumbDirectory;
+
+            if (File.Exists(thumbDirPath + Path.DirectorySeparatorChar + relativePath))
             {
-                return Image.FromFile(ThumbDirPath + Path.DirectorySeparatorChar + relativePath);
+                return Image.FromFile(thumbDirPath + Path.DirectorySeparatorChar + relativePath);
             }
             return null;
         }
 
         public Image GetImageFromRelPath(string relativePath)
         {
-            if (File.Exists(ImageDirPath + Path.DirectorySeparatorChar + relativePath))
+            var imageDirPath = _optionsMonitor.CurrentValue.ImageDirectory;
+
+            if (File.Exists(imageDirPath + Path.DirectorySeparatorChar + relativePath))
             {
-                return Image.FromFile(ImageDirPath + Path.DirectorySeparatorChar + relativePath);
+                return Image.FromFile(imageDirPath + Path.DirectorySeparatorChar + relativePath);
             }
             return null;
         }
 
         public Image GetImage(string path)
         {
+            var defaultEmptyColor = _optionsMonitor.CurrentValue.ProjectionBackColor;
+
             if (path == null)
             {
-                return ImageUtils.GetEmptyImage(DefaultImageSize, DefaultEmptyColor);
+                return ImageUtils.GetEmptyImage(_optionsMonitor.CurrentValue.ImageSize, defaultEmptyColor);
             }
             try
             {
@@ -185,8 +185,8 @@ namespace PraiseBase.Presenter.Manager
             }
             catch (Exception e)
             {
-                // log.Error(e.Message);
-                return ImageUtils.GetEmptyImage(DefaultImageSize, DefaultEmptyColor);
+                _logger.LogError(e, "GetImage");
+                return ImageUtils.GetEmptyImage(_optionsMonitor.CurrentValue.ImageSize, defaultEmptyColor);
             }
         }
 
@@ -194,13 +194,13 @@ namespace PraiseBase.Presenter.Manager
         {
             if (bg != null)
             {
-                if (bg.GetType() == typeof (ImageBackground))
+                if (bg.GetType() == typeof(ImageBackground))
                 {
-                    return GetImage(((ImageBackground) bg).ImagePath);
+                    return GetImage(((ImageBackground)bg).ImagePath);
                 }
-                if (bg.GetType() == typeof (ColorBackground))
+                if (bg.GetType() == typeof(ColorBackground))
                 {
-                    return ImageUtils.GetEmptyImage(DefaultImageSize, ((ColorBackground) bg).Color);
+                    return ImageUtils.GetEmptyImage(_optionsMonitor.CurrentValue.ImageSize, ((ColorBackground)bg).Color);
                 }
             }
             return null;
@@ -208,22 +208,24 @@ namespace PraiseBase.Presenter.Manager
 
         public Image GetThumb(IBackground bg)
         {
+            var defaultThumbSize = _optionsMonitor.CurrentValue.ThumbSize;
+
             if (bg != null)
             {
-                if (bg.GetType() == typeof (ImageBackground))
+                if (bg.GetType() == typeof(ImageBackground))
                 {
-                    var img = GetThumbFromRelPath(((ImageBackground) bg).ImagePath);
+                    var img = GetThumbFromRelPath(((ImageBackground)bg).ImagePath);
                     if (img != null)
                     {
                         return img;
                     }
                 }
-                else if (bg.GetType() == typeof (ColorBackground))
+                else if (bg.GetType() == typeof(ColorBackground))
                 {
-                    return ImageUtils.GetEmptyImage(DefaultThumbSize, ((ColorBackground) bg).Color);
+                    return ImageUtils.GetEmptyImage(defaultThumbSize, ((ColorBackground)bg).Color);
                 }
             }
-            return ImageUtils.GetEmptyImage(DefaultThumbSize, DefaultEmptyColor);
+            return ImageUtils.GetEmptyImage(defaultThumbSize, _optionsMonitor.CurrentValue.ProjectionBackColor);
         }
 
         /// <summary>
@@ -233,9 +235,11 @@ namespace PraiseBase.Presenter.Manager
         /// <returns></returns>
         public List<string> SearchImages(string needle)
         {
-            var rootDir = ImageDirPath + Path.DirectorySeparatorChar;
+            var rootDir = _optionsMonitor.CurrentValue.ImageDirectory + Path.DirectorySeparatorChar;
             var rootDirStrLen = rootDir.Length;
-            return (from ext in _imgExtensions from ims in Directory.GetFiles(rootDir, ext, SearchOption.AllDirectories) where !ims.Contains(ExcludeThumbDirName) && !ims.StartsWith(ThumbDirPath) let haystack = Path.GetFileNameWithoutExtension(ims) where haystack.ToLower().Contains(needle) select ims.Substring(rootDirStrLen)).ToList();
+            var thumbDirPath = _optionsMonitor.CurrentValue.ThumbDirectory;
+
+            return (from ext in _imgExtensions from ims in Directory.GetFiles(rootDir, ext, SearchOption.AllDirectories) where !ims.Contains(ExcludeThumbDirName) && !ims.StartsWith(thumbDirPath) let haystack = Path.GetFileNameWithoutExtension(ims) where haystack.ToLower().Contains(needle) select ims.Substring(rootDirStrLen)).ToList();
         }
 
         public void ImportImage(string sourcePath)
@@ -245,7 +249,7 @@ namespace PraiseBase.Presenter.Manager
 
         public void ImportImage(string sourcePath, string relativeTargetPath)
         {
-            string target = ImageDirPath;
+            string target = _optionsMonitor.CurrentValue.ImageDirectory;
             if (relativeTargetPath != null)
             {
                 target += "\\" + relativeTargetPath;

@@ -13,9 +13,6 @@
     <RootNamespace>PraiseBase.Presenter</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core Libraries.csproj"/>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\14_layer_deletelayer.png"/>
     <None Include="Resources\14_layer_newlayer.png"/>
     <None Include="Resources\1downarrow.png"/>
@@ -110,5 +107,11 @@
     <Content Include="Resources\greenscreen.png"/>
     <Content Include="Resources\greenscreen_small.png"/>
     <Content Include="Resources\translate_active.png"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core Libraries.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.*"/>
   </ItemGroup>
 </Project>

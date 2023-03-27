@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -30,6 +31,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PraiseBase.Presenter.Controls;
 using PraiseBase.Presenter.Editor;
 using PraiseBase.Presenter.Forms;
@@ -44,7 +48,6 @@ using PraiseBase.Presenter.Projection;
 using PraiseBase.Presenter.Properties;
 using PraiseBase.Presenter.Util;
 using Timer = System.Windows.Forms.Timer;
-using System.ComponentModel;
 
 namespace PraiseBase.Presenter.Presenter
 {
@@ -55,9 +58,6 @@ namespace PraiseBase.Presenter.Presenter
     /// </summary>
     public partial class MainWindow : LocalizableForm
     {
-        // Here is the once-per-class call to initialize the log object
-        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         private Timer _diaTimer;
         private List<String> _imageSearchResults;
 
@@ -76,27 +76,32 @@ namespace PraiseBase.Presenter.Presenter
         private readonly ImageManager _imgManager;
 
         private readonly BibleManager _bibleManager;
+        private readonly ILogger<MainWindow> _logger;
+        private readonly IOptionsMonitor<PresenterOptions> _optionsMonitor;
 
-        public MainWindow(SongManager songManager, ImageManager imgManager, BibleManager bibleManager, string setlistFile)
+        public MainWindow(IOptionsMonitor<PresenterOptions> optionsMonitor,
+            SongManager songManager, ImageManager imgManager, BibleManager bibleManager, ILogger<MainWindow> logger)
         {
-            _songManager = songManager;
-            _imgManager = imgManager;
-            _bibleManager = bibleManager;
+            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+            _songManager = songManager ?? throw new ArgumentNullException(nameof(songManager));
+            _imgManager = imgManager ?? throw new ArgumentNullException(nameof(imgManager));
+            _bibleManager = bibleManager ?? throw new ArgumentNullException(nameof(bibleManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             InitializeComponent();
 
-            Size = Settings.Default.MainWindowSize;
+            Size = _optionsMonitor.CurrentValue.MainWindowSize;
 
             RegisterChild(this);
 
             _originalFormTitle = Text;
 
             // Load setlist file if specified
-            LoadSetListIfExists(setlistFile);
+            // LoadSetListIfExists(setlistFile);
 
             songDetailElement.ImageManager = imgManager;
 
-            songDetailElement.AvailableSongCaption = Settings.Default.SongParts;
+            songDetailElement.AvailableSongCaption = _optionsMonitor.CurrentValue.SongParts;
         }
 
         /// <summary>
@@ -373,7 +378,7 @@ namespace PraiseBase.Presenter.Presenter
                 }
                 catch (Exception e)
                 {
-                    // log.Error(@"Song search exception: " + e);
+                    _logger.LogError(e, "Song search");
                 }
             }
 
@@ -441,10 +446,6 @@ namespace PraiseBase.Presenter.Presenter
 
         private void UpdateDataDir()
         {
-            _songManager.SongDirPath = SettingsUtil.GetSongDirPath(Settings.Default);
-            _imgManager.ImageDirPath = SettingsUtil.GetImageDirPath(Settings.Default);
-            _imgManager.ThumbDirPath = SettingsUtil.GetThumbDirPath(Settings.Default);
-            _bibleManager.BibleDirectory = SettingsUtil.GetBibleDirPath(Settings.Default);
             ReloadSongList();
             ReloadImageList();
             CheckThumbnails();
@@ -1408,10 +1409,11 @@ namespace PraiseBase.Presenter.Presenter
             {
                 treeViewImageDirectories.SelectedNode = null;
                 _imageSearchResults.Clear();
-                // log.Debug("Search: " + needle);
+                _logger.LogDebug("Search: " + needle);
+
                 foreach (string ims in _imgManager.SearchImages(needle))
                 {
-                    // log.Debug("Found: " + ims);
+                    _logger.LogDebug("Found: " + ims);
                     _imageSearchResults.Add(ims);
                 }
                 treeViewImageDirectories.SelectedNode = treeViewImageDirectories.Nodes[treeViewImageDirectories.Nodes.Count - 1];
@@ -1444,9 +1446,14 @@ namespace PraiseBase.Presenter.Presenter
             ProjectionManager.Instance.Dispose();
         }
 
+        private void OpenFolderInExplorer(string folder)
+        {
+            Process.Start("explorer.exe", folder);
+        }
+
         private void datenverzeichnisOeffnenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Settings.Default.DataDirectory);
+            OpenFolderInExplorer(_optionsMonitor.CurrentValue.DataDirectory);
         }
 
         private void toolStripButtonDisplaySettings_Click(object sender, EventArgs e)
@@ -1463,17 +1470,17 @@ namespace PraiseBase.Presenter.Presenter
 
         private void liederToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Settings.Default.DataDirectory + Path.DirectorySeparatorChar + Settings.Default.SongDir);
+            OpenFolderInExplorer(Settings.Default.DataDirectory + Path.DirectorySeparatorChar + Settings.Default.SongDir);
         }
 
         private void bilderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(_imgManager.ImageDirPath);
+            OpenFolderInExplorer(_imgManager.ImageDirPath);
         }
 
         private void setlistenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Settings.Default.DataDirectory + Path.DirectorySeparatorChar + Settings.Default.SetListDir);
+            OpenFolderInExplorer(Settings.Default.DataDirectory + Path.DirectorySeparatorChar + Settings.Default.SetListDir);
         }
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
@@ -2160,7 +2167,7 @@ namespace PraiseBase.Presenter.Presenter
 
         private void toolStripButtonDataFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(Settings.Default.DataDirectory);
+            OpenFolderInExplorer(Settings.Default.DataDirectory);
         }
 
         private void toolStripButtonToggleTranslationText_Click(object sender, EventArgs e)

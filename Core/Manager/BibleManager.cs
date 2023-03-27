@@ -25,6 +25,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PraiseBase.Presenter.Model.Bible;
 using PraiseBase.Presenter.Persistence.ZefaniaXML;
 
@@ -36,9 +39,6 @@ namespace PraiseBase.Presenter.Manager
     /// </summary>
     public class BibleManager
     {
-        // Here is the once-per-class call to initialize the log object
-        // private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         ///     Status of bible passage search
         /// </summary>
@@ -60,18 +60,17 @@ namespace PraiseBase.Presenter.Manager
             NotFound
         }
 
+        private readonly IOptionsMonitor<PresenterOptions> _optionsMonitor;
+        private readonly ILogger<BibleManager> _logger;
+
         /// <summary>
         ///     The constructor
         /// </summary>
-        public BibleManager(string bibleDirectory)
+        public BibleManager(IOptionsMonitor<PresenterOptions> optionsMonitor, ILogger<BibleManager> logger)
         {
-            BibleDirectory = bibleDirectory;
+            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        /// <summary>
-        ///     Directory where bible files are stored
-        /// </summary>
-        public string BibleDirectory { get; set; }
 
         /// <summary>
         ///     List of all availabe songs
@@ -89,7 +88,7 @@ namespace PraiseBase.Presenter.Manager
         /// <returns></returns>
         public List<string> GetBibleFiles()
         {
-            var di = new DirectoryInfo(BibleDirectory);
+            var di = new DirectoryInfo(_optionsMonitor.CurrentValue.BibleDirectory);
             if (!di.Exists)
             {
                 di.Create();
@@ -118,7 +117,7 @@ namespace PraiseBase.Presenter.Manager
                 }
                 catch (Exception e)
                 {
-                    // log.Error(e.Message);
+                    _logger.LogError(e, "Loading bible info");
                 }
             }
         }
@@ -257,7 +256,7 @@ namespace PraiseBase.Presenter.Manager
         public void ImportFile(string sourcePath)
         {
             new XmlBibleReader().LoadMeta(sourcePath);
-            string targetPath = BibleDirectory + "\\" + Path.GetFileName(sourcePath);
+            string targetPath = _optionsMonitor.CurrentValue.BibleDirectory + "\\" + Path.GetFileName(sourcePath);
             File.Copy(sourcePath, targetPath, true);
         }
 
