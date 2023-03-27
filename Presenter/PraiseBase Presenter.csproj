@@ -7,12 +7,108 @@
     <UseWpf>true</UseWpf>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
-  <!-- <ItemGroup>
-    <PackageReference Include="WindowsFormsIntegration" Version="7.0.0" />
-  </ItemGroup> -->
-
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PraiseBase.Presenter</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core Libraries.csproj" />
+    <ProjectReference Include="..\Core\Core Libraries.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\14_layer_deletelayer.png"/>
+    <None Include="Resources\14_layer_newlayer.png"/>
+    <None Include="Resources\1downarrow.png"/>
+    <None Include="Resources\1downarrow1.png"/>
+    <None Include="Resources\1downarrow11.png"/>
+    <None Include="Resources\1downarrow2.png"/>
+    <None Include="Resources\1leftarrow.png"/>
+    <None Include="Resources\1leftarrow1.png"/>
+    <None Include="Resources\1rightarrow.png"/>
+    <None Include="Resources\1rightarrow1.png"/>
+    <None Include="Resources\2leftarrow.png"/>
+    <None Include="Resources\2rightarrow.png"/>
+    <None Include="Resources\2uparrow.png"/>
+    <None Include="Resources\3dowarrow.png"/>
+    <None Include="Resources\3floppy_unmount.png"/>
+    <None Include="Resources\advancedsettings.png"/>
+    <None Include="Resources\advancedsettings_36.png"/>
+    <None Include="Resources\agt_action_fail1.png"/>
+    <None Include="Resources\agt_action_success.png"/>
+    <None Include="Resources\agt_back.png"/>
+    <None Include="Resources\agt_forward.png"/>
+    <None Include="Resources\AJ_Portable_Projection_Screen.png"/>
+    <None Include="Resources\background.png"/>
+    <None Include="Resources\background_36.png"/>
+    <None Include="Resources\Blackout on 36.png"/>
+    <None Include="Resources\Blackout on.png"/>
+    <None Include="Resources\Blackout on2.png"/>
+    <None Include="Resources\clean.png"/>
+    <None Include="Resources\clock.png"/>
+    <None Include="Resources\colors.png"/>
+    <None Include="Resources\Computer.ico"/>
+    <None Include="Resources\easymoblog.png"/>
+    <None Include="Resources\edit.png"/>
+    <None Include="Resources\edit_add.png"/>
+    <None Include="Resources\edit_remove.png"/>
+    <None Include="Resources\editcopy.png"/>
+    <None Include="Resources\editsong.png"/>
+    <None Include="Resources\editsong_36.png"/>
+    <None Include="Resources\error.png"/>
+    <None Include="Resources\exit.png"/>
+    <None Include="Resources\fade1blue.png"/>
+    <None Include="Resources\fileopen.png"/>
+    <None Include="Resources\filesave.png"/>
+    <None Include="Resources\folder_favorites.png"/>
+    <None Include="Resources\folder_favorites_36.png"/>
+    <None Include="Resources\gpg.png"/>
+    <None Include="Resources\gplv3-127x51.png"/>
+    <None Include="Resources\highlight.png"/>
+    <None Include="Resources\highlight_36.png"/>
+    <None Include="Resources\highlight_red _36.png"/>
+    <None Include="Resources\highlight_red.png"/>
+    <None Include="Resources\kate.png"/>
+    <None Include="Resources\kate_36.png"/>
+    <None Include="Resources\keditbookmarks.png"/>
+    <None Include="Resources\ktip.png"/>
+    <None Include="Resources\leinwand16.png"/>
+    <None Include="Resources\leinwand16_no.png"/>
+    <None Include="Resources\link.png"/>
+    <None Include="Resources\logo.png"/>
+    <None Include="Resources\monitor_256.png"/>
+    <None Include="Resources\newsong_36.png"/>
+    <None Include="Resources\ok16.png"/>
+    <None Include="Resources\package_favorite.png"/>
+    <None Include="Resources\pb mit schwarz.jpg"/>
+    <None Include="Resources\pb web.png"/>
+    <None Include="Resources\Projection off 36.png"/>
+    <None Include="Resources\Projection off.png"/>
+    <None Include="Resources\Projection on 36.png"/>
+    <None Include="Resources\Projection on.png"/>
+    <None Include="Resources\save_36.png"/>
+    <None Include="Resources\search.png"/>
+    <None Include="Resources\search_36.png"/>
+    <None Include="Resources\searchg.png"/>
+    <None Include="Resources\searchx.png"/>
+    <None Include="Resources\text_align_center.png"/>
+    <None Include="Resources\text_align_left.png"/>
+    <None Include="Resources\text_align_right.png"/>
+    <None Include="Resources\translate.png"/>
+    <None Include="Resources\Techniknetz_Logo-300x122.png"/>
+    <None Include="Resources\edit_add_slide.png"/>
+    <None Include="Resources\file_upload.png"/>
+    <None Include="Resources\xmag.png"/>
+    <None Include="Resources\wheel16.png"/>
+    <None Include="Resources\update16.png"/>
+    <None Include="Resources\unlink.png"/>
+    <None Include="Resources\translate_small.png"/>
+    <None Include="Resources\translate_disabled_small.png"/>
+    <None Include="Resources\translate_disabled.png"/>
+    <None Include="Resources\translate_cross_small.png"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\greenscreen.png"/>
+    <Content Include="Resources\greenscreen_small.png"/>
+    <Content Include="Resources\translate_active.png"/>
   </ItemGroup>
 </Project>
